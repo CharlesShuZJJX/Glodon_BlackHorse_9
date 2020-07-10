@@ -18,7 +18,7 @@ int main()
 	int errorStatue = CvProgramFunctions::showCracks();
 	if (errorStatue == ERROR_OPENFILE)
 	{
-		printf("打开图片失败");
+		printf("打开图片失败！");
 	}
 	return 0;
 }
