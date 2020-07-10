@@ -1,0 +1,9 @@
+﻿  CvProgramFunctions.cpp
+D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\01-Identify&Feature\CvProgramFunctions.cpp(42,35): warning C4101: “cPoint”: 未引用的局部变量
+D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\01-Identify&Feature\CvProgramFunctions.cpp(42,17): warning C4101: “cPointG”: 未引用的局部变量
+D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\01-Identify&Feature\CvProgramFunctions.cpp(42,26): warning C4101: “cPointB”: 未引用的局部变量
+D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\01-Identify&Feature\CvProgramFunctions.cpp(42,8): warning C4101: “cPointR”: 未引用的局部变量
+D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\01-Identify&Feature\CvProgramFunctions.cpp(131,39): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+  EntryFun.cpp
+  正在生成代码...
+  SSR_Graphic.vcxproj -> D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\00-sln\x64\Debug\SSR_Graphic.exe
