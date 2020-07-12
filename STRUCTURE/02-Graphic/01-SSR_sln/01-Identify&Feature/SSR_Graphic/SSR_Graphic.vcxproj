@@ -19,12 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\CommandsGraphic.h" />
     <ClInclude Include="..\CvGeFunctions.h" />
     <ClInclude Include="..\CvProgramFunctions.h" />
     <ClInclude Include="..\EXIF.h" />
     <ClInclude Include="..\GlobalParams.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\CommandsGraphic.cpp" />
     <ClCompile Include="..\CvGeFunctions.cpp" />
     <ClCompile Include="..\CvProgramFunctions.cpp" />
     <ClCompile Include="..\EntryFun.cpp" />

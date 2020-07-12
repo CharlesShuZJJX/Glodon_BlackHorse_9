@@ -8,17 +8,12 @@
 #include "CvGeFunctions.h"
 #include <vector>
 #include <stack>
-#include "CvProgramFunctions.h"
-#include "EXIF.h"
+#include "CommandsGraphic.h"
 #include "GlobalParams.h"
 using namespace std;
 using namespace cv;
 int main()
 {
-	int errorStatue = CvProgramFunctions::showCracks();
-	if (errorStatue == ERROR_OPENFILE)
-	{
-		printf("打开图片失败！");
-	}
+	Cmd::cmdOutPutCrackGraph();
 	return 0;
 }

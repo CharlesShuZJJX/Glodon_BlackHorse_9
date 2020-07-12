@@ -3,6 +3,7 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <stack>
+#include "GlobalParams.h"
 
 using namespace cv;
 using namespace std;
@@ -19,7 +20,7 @@ public:
 	static void swapMat(Mat& srcImg, Mat& dstImg);// 交换两个Mat [CSDN源码]
 	static void binaryzation(Mat& srcImg); // 二值化图像。0->0,非0->255 [CSDN源码]
 	static void findConnectedDomain(Mat& srcImg, vector<vector<Point>>& connectedDomains, int area, int WHRatio);// 检测连通域，并删除不符合条件的连通域[CSDN源码]
-	static void thinImage(Mat& srcImg);// 提取连通域的骨架[CSDN源码]
+	static void getSkeletonCurve(Mat& srcImg, vector<vector<Point>>& vecSkeletonCurves);// 提取连通域的骨架[CSDN源码 / sr-0711]
 	static Point calInfoPosition(int imgRows, int imgCols, int padding, const std::vector<cv::Point>& domain); //计算宽高信息的放置位置[CSDN源码]
 	static void getWhitePoints(Mat& srcImg, vector<Point>& domain); // 获取图像中白点的数量[CSDN源码]
 	static void turnBlackCrackToRed(Mat& redRes); //将黑色裂缝转为白色[07-09]

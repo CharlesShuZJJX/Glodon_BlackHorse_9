@@ -1,6 +1,7 @@
 #include "CvGeFunctions.h"
 using namespace std;
 using namespace cv;
+
 void CvGeFunctions::addContrast(Mat& srcImg)
 {
 	Mat lookUpTable(1, 256, CV_8U);
@@ -115,7 +116,7 @@ void CvGeFunctions::findConnectedDomain(Mat& srcImg, vector<vector<Point>>& conn
 
 	binaryzation(srcImg);
 }
-void CvGeFunctions::thinImage(Mat& srcImg) 
+void CvGeFunctions::getSkeletonCurve(Mat& srcImg, vector<vector<Point>>& vecSkeletonCurves)
 {
 	vector<Point> deleteList;
 	int neighbourhood[9];
@@ -193,8 +194,13 @@ void CvGeFunctions::thinImage(Mat& srcImg)
 
 		inOddIterations = !inOddIterations;
 	}
+	setEdgeBlack(srcImg);
+	string strDir;
+	strDir = ("skle%d.png");
+	imwrite(GLOBAL_OUTPUT_DIR + strDir, srcImg);
+	findConnectedDomain(srcImg, vecSkeletonCurves, 0, 0);
 }
-/* 获取图像中白点的数量 */
+
 void CvGeFunctions::getWhitePoints(Mat& srcImg, vector<Point>& domain) 
 {
 	domain.clear();
@@ -320,7 +326,7 @@ void CvGeFunctions::setEdgeBlack(Mat& src)
 	for (int i = 0; i < nRow; ++i)
 	{
 		uchar* data = src.ptr<uchar>(i);
-		if (i == 0 || i == nRow)
+		if (i == 0 || i == nRow - 1)
 		{
 			for (int j = 0; j < nCol; ++j)
 			{
@@ -330,7 +336,7 @@ void CvGeFunctions::setEdgeBlack(Mat& src)
 		else
 		{
 			data[0] = 0;
-			data[nCol] = 0;
+			data[nCol - 1] = 0;
 		}
 	}
 }

@@ -1,10 +1,9 @@
 #include"CvProgramFunctions.h"
 
-ErrorStatus CvProgramFunctions::showCracks()
+ErrorStatus CvProgramFunctions::getConnectedDomain(vector<vector<Point>>& connectedDomains, Mat& orgImg, Mat& resImg)
 {
-	Mat srcOriginPic = imread(GLOBAL_ORIGIN_JPG_DIR);
+	Mat srcOriginPic = orgImg;
 	Mat srcOriginPicBGR = srcOriginPic;
-	Mat resImg;
 	if (srcOriginPic.empty())
 	{
 		return ERROR_OPENFILE;
@@ -22,19 +21,20 @@ ErrorStatus CvProgramFunctions::showCracks()
 
 	//形态学变换
 	Mat kernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
-	dilate(resImg, resImg, kernel);//膨胀
-	morphologyEx(resImg, resImg, MORPH_CLOSE, kernel, Point(-1, -1), 3);
-	morphologyEx(resImg, resImg, MORPH_CLOSE, kernel);
+	//dilate(resImg, resImg, kernel);//膨胀
+	//morphologyEx(resImg, resImg, MORPH_CLOSE, kernel, Point(-1, -1), 3);
+	//morphologyEx(resImg, resImg, MORPH_CLOSE, kernel);
 
 	CvGeFunctions::setEdgeBlack(resImg);
 
 	imwrite(GLOBAL_OUTPUT_DIR + "afterKernelRes.png", resImg);
 
 	//寻找连通域
-	vector<vector<Point>> connectedDomains;
-	CvGeFunctions::findConnectedDomain(resImg, connectedDomains, 0, 0); //area和WHRatio调整为0，增加识别几率，缺点：连通域过宽
+	CvGeFunctions::findConnectedDomain(resImg, connectedDomains, 0, 0); //area和WHRatio调整为0，增加识别几率
 	kernel = getStructuringElement(MORPH_ELLIPSE, Size(7, 7));
 	morphologyEx(resImg, resImg, MORPH_CLOSE, kernel, Point(-1, -1), 5);
+
+/*
 	for (int m = 0; m < connectedDomains.size(); ++m)
 	{
 		for (int n = 0; n < connectedDomains[m].size(); ++n)
@@ -47,23 +47,27 @@ ErrorStatus CvProgramFunctions::showCracks()
 			srcOriginPicBGR.at<Vec3b>(i, j)[1] = 0;
 			srcOriginPicBGR.at<Vec3b>(i, j)[2] = 255;
 		}
-	}
+	}*/
 	imwrite(GLOBAL_OUTPUT_DIR + "orgConnRes.png", srcOriginPicBGR);
-	connectedDomains.clear();
+	//connectedDomains.clear();
+//	CvGeFunctions::findConnectedDomain(resImg, connectedDomains, 0, 0);
+//	kernel = getStructuringElement(MORPH_CROSS, Size(3, 3));
+//	morphologyEx(resImg, resImg, MORPH_CLOSE, kernel);
+
+//	kernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
+//	erode(resImg, resImg, kernel);
+
+//	connectedDomains.clear();
 	CvGeFunctions::findConnectedDomain(resImg, connectedDomains, 0, 0);
-	kernel = getStructuringElement(MORPH_CROSS, Size(3, 3));
-	morphologyEx(resImg, resImg, MORPH_CLOSE, kernel);
-
-	kernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
-	erode(resImg, resImg, kernel);
-
-	connectedDomains.clear();
-	CvGeFunctions::findConnectedDomain(resImg, connectedDomains, 0, 0);
-
+	return SUCCEED;
+}
+ErrorStatus CvProgramFunctions::showCracks(vector<vector<Point>>& connectedDomains, Mat& orgImg, Mat& resImg)
+{
 	cout << "开始测量" << endl;
 	cout << "连通域数量：" << connectedDomains.size() << endl;
 	Mat lookUpTable(1, 256, CV_8U, Scalar(0));
 	vector<CrackInfo> crackInfos;
+	vector<vector<Point>> vecSkeletonCurves;
 	for (auto domain_it = connectedDomains.begin(); domain_it != connectedDomains.end(); ++domain_it)
 	{
 		LUT(resImg, lookUpTable, resImg);
@@ -72,13 +76,8 @@ ErrorStatus CvProgramFunctions::showCracks()
 			resImg.ptr<uchar>(point_it->y)[point_it->x] = 255;
 		}
 		double area = (double)domain_it->size();
-		CvGeFunctions::thinImage(resImg);
-		CvGeFunctions::getWhitePoints(resImg, *domain_it);
-		long length = (long)domain_it->size();
-		Point position = CvGeFunctions::calInfoPosition(resImg.rows, resImg.cols, 50, *domain_it);
-		crackInfos.push_back(CrackInfo(position, length, (float)(area / length)));
+		CvGeFunctions::getSkeletonCurve(resImg, vecSkeletonCurves);
 	}
-
 	cout << "开始绘制信息" << endl;
 	cout << "信息数量：" << crackInfos.size() << endl;
 
@@ -99,7 +98,7 @@ ErrorStatus CvProgramFunctions::showCracks()
 	imwrite(GLOBAL_OUTPUT_DIR + "redRes.png", redRes);
 
 	Mat mix;
-	addWeighted(redRes, 0.5, srcOriginPicBGR, 0.5, 0.0, mix);//裂缝图和原图按1:1权重混合 [ssr 07-09]
+	addWeighted(redRes, 0.5, orgImg, 0.5, 0.0, mix);//裂缝图和原图按1:1权重混合 [ssr 07-09]
 	imwrite(GLOBAL_OUTPUT_DIR + "mixRes.png", mix);
 
 	cout << "保存图像完成" << endl;
@@ -128,9 +127,9 @@ ErrorStatus CvProgramFunctions::getCrackLengthByRatio(vector<vector<Point>>& vec
 {
 	for (int i = 0; i < vecCracks.size(); ++i)
 	{
-		int piexLength = vecCracks[i].size();
-		Point crPos = vecCracks[i][piexLength / 2];
-		double trueLength = piexLength * changeRatio;
+		int pixelLength = vecCracks[i].size();
+		Point crPos = vecCracks[i][pixelLength / 2];
+		double trueLength = pixelLength * changeRatio;
 		mapLength_Pos.insert(std::make_pair( trueLength, crPos));
 	}
 	return SUCCEED;
