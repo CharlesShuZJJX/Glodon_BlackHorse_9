@@ -17,48 +17,25 @@ ErrorStatus CvProgramFunctions::getConnectedDomain(vector<vector<Point>>& connec
 	int cannyMax = (avgGray) > 255 ? 255 : (avgGray);
 	int cannyMin = cannyMax / 5; // 上下阈值之比为5:1 [ssr 07-09]
 	Canny(srcOriginPic, resImg, cannyMin, cannyMax, 3); // 边缘检测 
+	vector<Point> outPts; //记录白色轮廓
+	CvGeFunctions::getWhitePoints(resImg, outPts);
+	GLOBAL_OUTPTS = outPts;
 	imwrite(GLOBAL_OUTPUT_DIR + "canneyRes.png", resImg);
 
-	//形态学变换
+	//形态学变换,不能膨胀，因为会导致连通域变宽，宽度失真
 	Mat kernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
-	//dilate(resImg, resImg, kernel);//膨胀
-	//morphologyEx(resImg, resImg, MORPH_CLOSE, kernel, Point(-1, -1), 3);
-	//morphologyEx(resImg, resImg, MORPH_CLOSE, kernel);
+	morphologyEx(resImg, resImg, MORPH_CLOSE, kernel, Point(-1, -1), 3);
+	kernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
+	erode(resImg, resImg, kernel);
 
 	CvGeFunctions::setEdgeBlack(resImg);
+	//CvGeFunctions::fillPtsToBlack(resImg, outPts);
 
 	imwrite(GLOBAL_OUTPUT_DIR + "afterKernelRes.png", resImg);
 
 	//寻找连通域
-	CvGeFunctions::findConnectedDomain(resImg, connectedDomains, 0, 0); //area和WHRatio调整为0，增加识别几率
-	kernel = getStructuringElement(MORPH_ELLIPSE, Size(7, 7));
-	morphologyEx(resImg, resImg, MORPH_CLOSE, kernel, Point(-1, -1), 5);
-
-/*
-	for (int m = 0; m < connectedDomains.size(); ++m)
-	{
-		for (int n = 0; n < connectedDomains[m].size(); ++n)
-		{
-			int cPointR, cPointG, cPointB, cPoint;//currentPoint;
-			int i = connectedDomains[m][n].y;
-			int j = connectedDomains[m][n].x;
-
-			srcOriginPicBGR.at<Vec3b>(i, j)[0] = 0;
-			srcOriginPicBGR.at<Vec3b>(i, j)[1] = 0;
-			srcOriginPicBGR.at<Vec3b>(i, j)[2] = 255;
-		}
-	}*/
+	CvGeFunctions::findConnectedDomain(resImg, connectedDomains, 2, 0); //area和WHRatio调整为0，增加识别几率
 	imwrite(GLOBAL_OUTPUT_DIR + "orgConnRes.png", srcOriginPicBGR);
-	//connectedDomains.clear();
-//	CvGeFunctions::findConnectedDomain(resImg, connectedDomains, 0, 0);
-//	kernel = getStructuringElement(MORPH_CROSS, Size(3, 3));
-//	morphologyEx(resImg, resImg, MORPH_CLOSE, kernel);
-
-//	kernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
-//	erode(resImg, resImg, kernel);
-
-//	connectedDomains.clear();
-	CvGeFunctions::findConnectedDomain(resImg, connectedDomains, 0, 0);
 	return SUCCEED;
 }
 ErrorStatus CvProgramFunctions::showCracks(vector<vector<Point>>& connectedDomains, Mat& orgImg, Mat& resImg)
@@ -68,6 +45,7 @@ ErrorStatus CvProgramFunctions::showCracks(vector<vector<Point>>& connectedDomai
 	Mat lookUpTable(1, 256, CV_8U, Scalar(0));
 	vector<CrackInfo> crackInfos;
 	vector<vector<Point>> vecSkeletonCurves;
+	imwrite(GLOBAL_OUTPUT_DIR + "resultn.png", resImg);
 	for (auto domain_it = connectedDomains.begin(); domain_it != connectedDomains.end(); ++domain_it)
 	{
 		LUT(resImg, lookUpTable, resImg);
@@ -76,18 +54,27 @@ ErrorStatus CvProgramFunctions::showCracks(vector<vector<Point>>& connectedDomai
 			resImg.ptr<uchar>(point_it->y)[point_it->x] = 255;
 		}
 		double area = (double)domain_it->size();
+		
 		CvGeFunctions::getSkeletonCurve(resImg, vecSkeletonCurves);
 	}
 	cout << "开始绘制信息" << endl;
-	cout << "信息数量：" << crackInfos.size() << endl;
+	cout << "信息数量：" << vecSkeletonCurves.size() << endl;
 
 	LUT(resImg, lookUpTable, resImg);
-	for (auto domain_it = connectedDomains.cbegin(); domain_it != connectedDomains.cend(); ++domain_it)
+
+	int step = 1;
+	for (auto domain_it = vecSkeletonCurves.cbegin(); domain_it != vecSkeletonCurves.cend(); ++domain_it)
 	{
+		if (step == 100)
+		{
+			++step;
+			continue;
+		}
 		for (auto point_it = domain_it->cbegin(); point_it != domain_it->cend(); ++point_it)
 		{
 			resImg.ptr<uchar>(point_it->y)[point_it->x] = 255;
 		}
+		++step;
 	}
 
 	resImg = ~resImg; //颜色取反，获取白底黑缝的图案[ssr 07-09]
@@ -102,6 +89,9 @@ ErrorStatus CvProgramFunctions::showCracks(vector<vector<Point>>& connectedDomai
 	imwrite(GLOBAL_OUTPUT_DIR + "mixRes.png", mix);
 
 	cout << "保存图像完成" << endl;
+	multimap<double, Point> mapLength_Pos, mapWid_Pos;
+	getCrackLengthByRatio(vecSkeletonCurves, mapLength_Pos);
+	getCrackWidthByRatio(vecSkeletonCurves, mapWid_Pos);
 	return SUCCEED;
 }
 bool CvProgramFunctions::comparePoint(Point pt1, Point pt2)
@@ -123,14 +113,56 @@ bool CvProgramFunctions::comparePoint(Point pt1, Point pt2)
 		return false;
 	}
 }
-ErrorStatus CvProgramFunctions::getCrackLengthByRatio(vector<vector<Point>>& vecCracks, multimap<double, Point>& mapLength_Pos, double changeRatio)
+ErrorStatus CvProgramFunctions::getCrackLengthByRatio(vector<vector<Point>>& vecCracks, multimap<double, Point>& mapLength_Pos)
 {
 	for (int i = 0; i < vecCracks.size(); ++i)
 	{
+		if (vecCracks[i].size() == 0)
+		{
+			continue;
+		}
 		int pixelLength = vecCracks[i].size();
 		Point crPos = vecCracks[i][pixelLength / 2];
-		double trueLength = pixelLength * changeRatio;
+		double trueLength = pixelLength * GLOBAL_PIXEL_TO_REAL_RATIO;
 		mapLength_Pos.insert(std::make_pair( trueLength, crPos));
+		printf("裂缝位置：(%d, %d)，长度:%f像素\n", crPos.y, crPos.x, trueLength);
+	}
+	return SUCCEED;
+}
+ErrorStatus CvProgramFunctions::getCrackWidthByRatio(vector<vector<Point>>& vecCracks, multimap<double, Point>& mapWid_Pos)
+{
+	for (int i = 0; i < vecCracks.size(); ++i)
+	{
+		if (vecCracks[i].size() == 0)
+		{
+			continue;
+		}
+		double crackDis = DBL_MIN;
+		Point crPos = vecCracks[i][vecCracks[i].size() / 2];
+		for (int j = 0; j < vecCracks[i].size(); ++j)
+		{
+			int xSkl = vecCracks[i][j].y;
+			int ySkl = vecCracks[i][j].x;
+			double minDis = DBL_MAX;
+			for (int k = 0; k < GLOBAL_OUTPTS.size(); ++k)
+			{
+				
+				int xProfile = GLOBAL_OUTPTS[k].y;
+				int yProfile = GLOBAL_OUTPTS[k].x;
+				double disThis = 2 * sqrt(pow(xSkl - xProfile - 1 / 2, 2) + pow(ySkl - yProfile - 1 / 2, 2));
+				if (minDis > disThis)
+				{
+					minDis = disThis;
+				}
+			}
+			if (crackDis < minDis)
+			{
+				crackDis = minDis;
+			}
+		}
+		double trueWid = crackDis * GLOBAL_PIXEL_TO_REAL_RATIO;
+		mapWid_Pos.insert(std::make_pair(trueWid, crPos));
+		printf("裂缝位置：(%d, %d)，宽度:%f像素\n", crPos.y, crPos.x, trueWid);
 	}
 	return SUCCEED;
 }

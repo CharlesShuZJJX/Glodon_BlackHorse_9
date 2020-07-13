@@ -5,7 +5,7 @@
 #define __EXIF_H
 
 #include <string>
-
+#pragma once
 
 namespace easyexif {
 
@@ -125,7 +125,7 @@ namespace easyexif {
 	class ExifFunctions {
 	public:
 		static int cmdShowEXIF(easyexif::EXIFInfo& result);
-		static int cmdGetExifValue(easyexif::EXIFInfo& result);
+		static int cmdGetExifValue(const char* photoPath, easyexif::EXIFInfo& result);
         static void getFocus(easyexif::EXIFInfo& result, double& focal, double& focal35mm);
         static double getRcmos(double focal, double focal35mm);
 	};

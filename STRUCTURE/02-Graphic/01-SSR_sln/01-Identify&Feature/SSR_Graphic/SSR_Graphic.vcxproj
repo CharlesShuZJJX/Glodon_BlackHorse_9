@@ -31,6 +31,7 @@
     <ClCompile Include="..\CvProgramFunctions.cpp" />
     <ClCompile Include="..\EntryFun.cpp" />
     <ClCompile Include="..\EXIF.cpp" />
+    <ClCompile Include="..\GlobalParams.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

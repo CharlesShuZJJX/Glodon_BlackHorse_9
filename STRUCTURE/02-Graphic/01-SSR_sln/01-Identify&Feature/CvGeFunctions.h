@@ -4,7 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include <stack>
 #include "GlobalParams.h"
-
+#include "EXIF.h"
 using namespace cv;
 using namespace std;
 
@@ -26,5 +26,7 @@ public:
 	static void turnBlackCrackToRed(Mat& redRes); //将黑色裂缝转为白色[07-09]
 	static int getCannyThresholdUp(Mat& src, int tol = 2); //计算Canny边缘检测的上限阈值[07-09]
 	static void setEdgeBlack(Mat& src); //将边缘涂黑[07-09]
-	static double getChangeRatio(double Rcmos, double focal, double dis); //计算像素对应的实际距离转换系数，均为毫米[07-10] 
+	static double getChangeRatio(double Rcmos, double focal, double dis); //计算像素对应的实际距离转换系数，均为毫米，举例法[07-10] 
+	static double getChangeRatio(double refRealLen, double refPixelLen); //计算像素对应的实际距离转换系数，均为毫米,参照法[07-13] 
+	static void fillPtsToBlack(Mat& src, vector<Point> ptsToFill); //将指定点涂黑
 };

@@ -47,5 +47,8 @@
     <ClCompile Include="..\CommandsGraphic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\GlobalParams.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

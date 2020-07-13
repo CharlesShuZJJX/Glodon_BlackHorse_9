@@ -344,3 +344,22 @@ double CvGeFunctions::getChangeRatio(double Rcmos, double focal, double dis)
 {
 	return Rcmos * (dis * dis + dis * sqrt(dis * dis / 4.0 - focal * dis) - focal * dis) / (focal * dis);
 }
+double CvGeFunctions::getChangeRatio(double refRealLen, double refPixelLen)
+{
+	return refRealLen / refPixelLen;
+}
+void  CvGeFunctions::fillPtsToBlack(Mat& src, vector<Point> ptsToFill)
+{
+	int nRow = src.rows;
+	int nCol = src.cols;
+	for (int i = 0; i < ptsToFill.size(); ++i)
+	{
+		int x = ptsToFill[i].y;
+		int y = ptsToFill[i].x;
+		if (x < nRow && y < nCol)
+		{
+			uchar* data = src.ptr<uchar>(x);
+			data[y] = 0;
+		}
+	}
+}

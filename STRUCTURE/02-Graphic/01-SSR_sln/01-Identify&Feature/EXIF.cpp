@@ -1,5 +1,5 @@
 #pragma warning(disable:4996)
-#include "exif.h"
+#include "EXIF.h"
 #include <algorithm>
 #include <cstdint>
 #include <stdio.h>
@@ -916,9 +916,8 @@ void easyexif::EXIFInfo::clear() {
     LensInfo.Make = "";
     LensInfo.Model = "";
 }
-int easyexif::ExifFunctions::cmdGetExifValue(easyexif::EXIFInfo& result)
+int easyexif::ExifFunctions::cmdGetExifValue(const char* photoPath, easyexif::EXIFInfo& result)
 {
-	const char* photoPath = "C:/Users/SHU/Desktop/crackTest2.JPG";
 	// Read the JPEG file into a buffer
 	FILE* fp = fopen(photoPath, "rb");
 	if (!fp) {
