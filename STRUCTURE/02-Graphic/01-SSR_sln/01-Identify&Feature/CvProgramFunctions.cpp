@@ -56,6 +56,7 @@ ErrorStatus CvProgramFunctions::showCracks(vector<vector<Point>>& connectedDomai
 		double area = (double)domain_it->size();
 		
 		CvGeFunctions::getSkeletonCurve(resImg, vecSkeletonCurves);
+		GLOBAL_VEC_CRACK.push_back(crackInterface(*domain_it, vecSkeletonCurves[vecSkeletonCurves.size() - 1]));
 	}
 	cout << "开始绘制信息" << endl;
 	cout << "信息数量：" << vecSkeletonCurves.size() << endl;

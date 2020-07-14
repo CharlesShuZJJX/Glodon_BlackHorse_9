@@ -52,7 +52,7 @@ using namespace cv;
 class crackInterface {
 public:
 	crackInterface() {};
-	crackInterface(vector<vector<Point>> vecDomain, vector<vector<Point>> vecSkl)
+	crackInterface(vector<Point> vecDomain, vector<Point> vecSkl)
 	{
 		m_vecDomain = vecDomain;
 		m_vecSkl = vecSkl;
@@ -70,8 +70,8 @@ public:
 	void   setArea(double area) { m_area = area; }
 	double getArea() { return m_area; }
 public:
-	vector<vector<Point>> m_vecDomain;
-	vector<vector<Point>> m_vecSkl;
+	vector<Point> m_vecDomain;
+	vector<Point> m_vecSkl;
 private:
 	static int m_numCreated;
 	int m_Index;
@@ -80,4 +80,5 @@ private:
 	double m_area;
 	Point m_pos;
 };
+extern vector<crackInterface> GLOBAL_VEC_CRACK;
 /////////////////////////////////////////////////////////////////////////////////////////////
