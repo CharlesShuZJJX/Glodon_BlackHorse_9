@@ -90,9 +90,10 @@ ErrorStatus CvProgramFunctions::showCracks(vector<vector<Point>>& connectedDomai
 	imwrite(GLOBAL_OUTPUT_DIR + "mixRes.png", mix);
 
 	cout << "±£´æÍ¼ÏñÍê³É" << endl;
-	multimap<double, Point> mapLength_Pos, mapWid_Pos;
+	multimap<double, Point> mapLength_Pos, mapWid_Pos, mapArea_Pos;
 	getCrackLengthByRatio(vecSkeletonCurves, mapLength_Pos);
 	getCrackWidthByRatio(vecSkeletonCurves, mapWid_Pos);
+	getCrackAreaByRatio(vecSkeletonCurves, mapArea_Pos);
 	return SUCCEED;
 }
 bool CvProgramFunctions::comparePoint(Point pt1, Point pt2)
@@ -114,36 +115,37 @@ bool CvProgramFunctions::comparePoint(Point pt1, Point pt2)
 		return false;
 	}
 }
-ErrorStatus CvProgramFunctions::getCrackLengthByRatio(vector<vector<Point>>& vecCracks, multimap<double, Point>& mapLength_Pos)
+ErrorStatus CvProgramFunctions::getCrackLengthByRatio()
 {
-	for (int i = 0; i < vecCracks.size(); ++i)
+	for (int i = 0; i < GLOBAL_VEC_CRACK.size(); ++i)
 	{
-		if (vecCracks[i].size() == 0)
+		if (GLOBAL_VEC_CRACK[i].m_vecSkl.size() == 0)
 		{
 			continue;
 		}
-		int pixelLength = vecCracks[i].size();
-		Point crPos = vecCracks[i][pixelLength / 2];
+		int pixelLength = GLOBAL_VEC_CRACK[i].m_vecSkl.size();
+		Point crPos = GLOBAL_VEC_CRACK[i].m_vecSkl[pixelLength / 2];
 		double trueLength = pixelLength * GLOBAL_PIXEL_TO_REAL_RATIO;
-		mapLength_Pos.insert(std::make_pair( trueLength, crPos));
+		//mapLength_Pos.insert(std::make_pair( trueLength, crPos));
 		printf("ÁÑ·ìÎ»ÖÃ£º(%d, %d)£¬³¤¶È:%fÏñËØ\n", crPos.y, crPos.x, trueLength);
 	}
 	return SUCCEED;
 }
-ErrorStatus CvProgramFunctions::getCrackWidthByRatio(vector<vector<Point>>& vecCracks, multimap<double, Point>& mapWid_Pos)
+ErrorStatus CvProgramFunctions::getCrackWidthByRatio()
 {
-	for (int i = 0; i < vecCracks.size(); ++i)
+	for (int i = 0; i < GLOBAL_VEC_CRACK.size(); ++i)
 	{
-		if (vecCracks[i].size() == 0)
+		if (GLOBAL_VEC_CRACK[i].m_vecSkl.size() == 0)
 		{
 			continue;
 		}
 		double crackDis = DBL_MIN;
-		Point crPos = vecCracks[i][vecCracks[i].size() / 2];
-		for (int j = 0; j < vecCracks[i].size(); ++j)
+		int pixelLength = GLOBAL_VEC_CRACK[i].m_vecSkl.size();
+		Point crPos = vecCracks[i][pixelLength / 2];
+		for (int j = 0; j < GLOBAL_VEC_CRACK[i].m_vecSkl.size(); ++j)
 		{
-			int xSkl = vecCracks[i][j].y;
-			int ySkl = vecCracks[i][j].x;
+			int xSkl = GLOBAL_VEC_CRACK[i].m_vecSkl[j].y;
+			int ySkl = GLOBAL_VEC_CRACK[i].m_vecSkl[j].x;
 			double minDis = DBL_MAX;
 			for (int k = 0; k < GLOBAL_OUTPTS.size(); ++k)
 			{
@@ -164,6 +166,22 @@ ErrorStatus CvProgramFunctions::getCrackWidthByRatio(vector<vector<Point>>& vecC
 		double trueWid = crackDis * GLOBAL_PIXEL_TO_REAL_RATIO;
 		mapWid_Pos.insert(std::make_pair(trueWid, crPos));
 		printf("ÁÑ·ìÎ»ÖÃ£º(%d, %d)£¬¿í¶È:%fÏñËØ\n", crPos.y, crPos.x, trueWid);
+	}
+	return SUCCEED;
+}
+ErrorStatus CvProgramFunctions::getCrackAreaByRatio()
+{
+	for (int i = 0; i < GLOBAL_VEC_CRACK.size(); ++i)
+	{
+		if (GLOBAL_VEC_CRACK[i].m_vecDomain.size() == 0)
+		{
+			continue;
+		}
+		int pixelArea = GLOBAL_VEC_CRACK[i].m_vecDomain.size();
+		int pixelLength = GLOBAL_VEC_CRACK[i].m_vecSkl.size();
+		Point crPos = GLOBAL_VEC_CRACK[i].m_vecSkl[pixelLength / 2];
+		double trueLength = pixelArea * GLOBAL_PIXEL_TO_REAL_RATIO;
+		printf("ÁÑ·ìÎ»ÖÃ£º(%d, %d)£¬Ãæ»ý:%fÏñËØ\n", crPos.y, crPos.x, trueLength);
 	}
 	return SUCCEED;
 }

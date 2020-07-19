@@ -304,8 +304,22 @@ int CvGeFunctions::getCannyThresholdUp(Mat& src, int tol)
 				}
 			}
 		}
-		lightAvg /= numLight;
-		darkAvg /= numDark;
+		if (numLight == 0)
+		{
+			lightAvg = 0;
+		}
+		else
+		{
+			lightAvg /= numLight;
+		}
+		if (numDark == 0)
+		{
+			darkAvg = 0;
+		}
+		else
+		{
+			darkAvg /= numDark;
+		}
 		if (abs((lightAvg + darkAvg) / 2 - grayAvg) <= tol)
 		{
 			printf("已完成自适应阈值划分,灰度均值为%d \n", grayAvg);

@@ -1,11 +1,6 @@
-﻿  CommandsGraphic.cpp
-  CvGeFunctions.cpp
-D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\01-Identify&Feature\CvGeFunctions.cpp(253,7): warning C4554: “&”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
-D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\01-Identify&Feature\CvGeFunctions.cpp(253,47): warning C4554: “&”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
-D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\01-Identify&Feature\CvGeFunctions.cpp(245,33): warning C4101: “cPoint”: 未引用的局部变量
-  CvProgramFunctions.cpp
-D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\01-Identify&Feature\CvProgramFunctions.cpp(125,40): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
-  EntryFun.cpp
-  GlobalParams.cpp
-  正在生成代码...
+﻿  CvProgramFunctions.cpp
+D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\01-Identify&Feature\CvProgramFunctions.cpp(126,56): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\01-Identify&Feature\CvProgramFunctions.cpp(143,56): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\01-Identify&Feature\CvProgramFunctions.cpp(180,57): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\01-Identify&Feature\CvProgramFunctions.cpp(182,56): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
   SSR_Graphic.vcxproj -> D:\# 2018-19 Shu\8 Glodon\#Code\Glodon_BlackHorse_9\STRUCTURE\02-Graphic\01-SSR_sln\00-sln\x64\Debug\SSR_Graphic.exe
